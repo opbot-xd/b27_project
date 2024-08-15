@@ -20,7 +20,7 @@ func init() {
 }
 
 func main() {
-	
+	//cli parser that checks which server to start websocket one or http one
 	server := flag.String("server", "", "http,websocket")
 	flag.Parse()
 
