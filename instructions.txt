@@ -1,0 +1,7 @@
+1. set up redis on your device
+https://redis.io/docs/latest/operate/oss_and_stack/install/install-stack/ --> for redis cli
+https://redis.io/try-free/ --> for redis cloud
+
+2. Setup GoLang environment --> https://medium.com/@charles.denovo/setting-up-golang-on-linux-the-right-way-c546b212dd48
+
+3. currently the main directory is "chat"
