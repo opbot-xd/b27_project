@@ -1,11 +1,11 @@
-package ws
+package websocket
 
 import (
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"time"
+	// "time"
 	"github.com/gorilla/websocket"
 	"assign_work/redisrepo"
 )
@@ -17,12 +17,13 @@ type Client struct {
 }
 
 type Work struct {
+	Type string `json:"type"`
 	Username string `json:"username"`
 	To string `json:"to"`
 	Work   string `json:"work"` //problem statement
 	Link string `json:"link"`
-	FromTS int64 `json:"fromts"` //work assigned
-	ToTS int64 `json:"tots"` //last date of submission
+	FromTS string `json:"fromts"` //work assigned
+	ToTS string `json:"tots"` //last date of submission
 }
 var clients = make(map[*Client]bool)
 var broadcast = make(chan *Work)
@@ -35,9 +36,6 @@ var upgrader = websocket.Upgrader{
 }
 
 func work_receiver(client *Client) {
-
-	
-
 	for {
 		// readMessage returns messageType, message, err
 		// messageType: 1-> Text Message, 2 -> Binary Message
@@ -48,7 +46,7 @@ func work_receiver(client *Client) {
 		}
 
 		m := &Work{}
-
+		log.Println(p)
 		err = json.Unmarshal(p, m)
 		if err != nil {
 			log.Println("error while unmarshaling chat", err)
@@ -56,14 +54,14 @@ func work_receiver(client *Client) {
 		}
 
 		fmt.Println("host", client.Conn.RemoteAddr())
-		// if m.Type == "bootup" {
-		// 	// do mapping on bootup
-		// 	client.Username = m.Username
-		// 	fmt.Println("client successfully mapped", &client, client, client.Username)
-		// } else {
+		if m.Type == "bootup" {
+			// do mapping on bootup
+			client.Username = m.Username
+			fmt.Println("client successfully mapped", &client, client, client.Username)
+		} else {
 			fmt.Println("received work")
 			// c := m.Chat
-			m.FromTS = time.Now().Unix()
+			// m.FromTS = time.Now().Unix()
 
 			// save in redis
 			err1 := redisrepo.AssignWork(m.Username,m.To,m.Work,m.Link,m.FromTS,m.ToTS)
@@ -74,7 +72,7 @@ func work_receiver(client *Client) {
 			broadcast<-m
 		}
 	}
-// }
+}
 
 func work_broadcaster(){
 	for {
@@ -139,6 +137,6 @@ func StartWebsocketServer() {
 
 	go work_broadcaster()
 	setupRoutes()
-	http.ListenAndServe(":8081", nil)
+	http.ListenAndServe(":8083", nil)
 }
 

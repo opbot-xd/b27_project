@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"assign_work/websocket"
 
 	// "./httpserver/httpserver.go"
 	"github.com/joho/godotenv"
@@ -21,12 +22,15 @@ func init() {
 
 func main() {
 	//cli parser that checks which server to start websocket one or http one
-	server := flag.String("work_server", "","")
+	server := flag.String("server", "","http,websocket")
 	flag.Parse()
 
-	if *server == "work_server" {
+	if *server == "http" {
 		fmt.Println("http server is starting on :8082")
 		httpserver.StartHTTPServer()
+	}else if *server == "websocket"{
+		fmt.Println("websocket server is starting on :8083")
+		websocket.StartWebsocketServer()
 	}else {
 		fmt.Println("invalid server. Available server: work_server")
 	}

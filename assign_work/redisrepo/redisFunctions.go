@@ -11,13 +11,13 @@ type Work struct {
 	To string `json:"to"`
 	Work   string `json:"work"`//problem statement
 	Link string `json:"link"` 
-	FromTS int64 `json:"fromts"` //work assigned
-	ToTS int64 `json:"tots"` //last date of submission
+	FromTS string `json:"fromts"` //work assigned
+	ToTS string `json:"tots"` //last date of submission
 }
 
 
 
-func AssignWork(username string, to string, work string, link string, fromts int64, tots int64) error {
+func AssignWork(username string, to string, work string, link string, fromts string, tots string) error {
     err := redisClient.HMSet(context.Background(), "work: "+username+" : "+to, map[string]interface{}{
         "work":   work,
         "link":   link,
