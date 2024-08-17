@@ -32,7 +32,7 @@ func StartHTTPServer() {
 		fmt.Fprintf(w, "Simple Server")
 	}).Methods(http.MethodGet)
 
-	r.HandleFunc("/assign_work",assign_work_handler).Methods(http.MethodPost)
+	r.HandleFunc("/assign_work",Assign_work_handler).Methods(http.MethodPost)
 	r.HandleFunc("/submit_work",submit_work_handler).Methods(http.MethodPost)
 
 	// Use default options
@@ -40,7 +40,7 @@ func StartHTTPServer() {
 	http.ListenAndServe(":8080", handler)
 }
 
-func assign_work_handler(w http.ResponseWriter, r *http.Request){
+func Assign_work_handler(w http.ResponseWriter, r *http.Request){
 	w.Header().Set("Content-Type", "application/json")
 
 	u := &Work{}   // user request is decoded below and store
@@ -60,5 +60,5 @@ func assign_work_handler(w http.ResponseWriter, r *http.Request){
 // }
 
 func submit_work_handler(w http.ResponseWriter, r *http.Request){
-	
+
 }
