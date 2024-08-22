@@ -5,12 +5,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>PP - Websockets</title>
+    <title>Assign Work</title>
 </head>
 
 <body>
     <div class="center">
-        <h1>Amazing Chat Application</h1>
+        <h1>Assign Work</h1>
         <h3 id="chat-header">Currently in chat: general</h3>
         <h3 id="connection-header">Connected to Websocket: false</h3>
 
@@ -35,8 +35,12 @@
         Chatroom-message form is used to send messages
         -->
         <form id="chatroom-message">
-            <label for="message">Message:</label>
-            <input type="text" id="message" name="message"><br><br>
+            <label for="to">To:</label>
+            <input type="text" id="to" name="to"><br><br>
+            <label for="ps">Problem Statement:</label>
+            <input type="text" id="ps" name="ps"><br><br>
+            <label for="link">Link:</label>
+            <input type="text" id="link" name="link"><br><br>
             <input type="submit" value="Send message">
         </form>
 
@@ -80,8 +84,10 @@
          * SendMessageEvent is used to send messages to other clients
          * */
         class SendMessageEvent {
-            constructor(message, from) {
-                this.message = message;
+            constructor(to , ps, link,from) {
+                this.to = to;
+                this.ps = ps;
+                this.link = link;
                 this.from = from;
             }
         }
@@ -89,8 +95,11 @@
          * NewMessageEvent is messages comming from clients
          * */
         class NewMessageEvent {
-            constructor(message, from, sent) {
-                this.message = message;
+            constructor(to,ps,link, from, sent) {
+                this.to = to;
+                this.ps = ps;
+                this.link = link;
+                // this.message = message;
                 this.from = from;
                 this.sent = sent;
             }
@@ -124,7 +133,7 @@
         function appendChatMessage(messageEvent) {
             var date = new Date(messageEvent.sent);
             // format message
-            const formattedMsg = `${date.toLocaleString()}: ${messageEvent.message}`;
+            const formattedMsg = `${date.toLocaleString()}: ${messageEvent.ps}`;
             // Append Message
             textarea = document.getElementById("chatmessages");
             textarea.innerHTML = textarea.innerHTML + "\n" + formattedMsg;
@@ -161,9 +170,13 @@
          * sendMessage will send a new message onto the Chat
          * */
         function sendMessage() {
-            var newmessage = document.getElementById("message");
-            if (newmessage != null) {
-                let outgoingEvent = new SendMessageEvent(newmessage.value, "percy");
+            var to = document.getElementById("to");
+            var ps = document.getElementById("ps");
+            var link = document.getElementById("link");
+            var from = document.getElementById("username");
+
+            if (ps != null) {
+                let outgoingEvent = new SendMessageEvent(to.value,ps.value,link.value,from.value);
                 sendEvent("send_message", outgoingEvent)
             }
             return false;
@@ -265,13 +278,13 @@
             margin: 0;
             width: 100%;
             height: 100%;
-            background: rgb(66, 56, 56);
+            background: rgb(255, 255, 255);
         }
 
         .center {
             margin: auto;
             width: 50%;
-            border: 3px solid green;
+            border: 3px solid black;
             padding: 10px;
         }
     </style>
