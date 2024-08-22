@@ -44,7 +44,7 @@ class Chat extends Component {
     this.setState({ username: user });
     this.getContacts(user);
 
-    
+    const conn = new SocketConnection()
     await this.setState({ socketConn: conn });
     // conn.connect(msg => console.log('message received'));
     // connect to ws connection
