@@ -14,7 +14,7 @@ func main() {
 	ctx, cancel := context.WithCancel(rootCtx)
 
 	defer cancel()
-
+	Connect_Redis()
 	setupAPI(ctx)
 
 	// Serve on port :8080, fudge yeah hardcoded port

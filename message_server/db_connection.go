@@ -1,74 +1,27 @@
 package main
 
 import (
- "context"
- "fmt"
- "log"
-//  "os"
-
-//  "github.com/joho/godotenv"
- "go.mongodb.org/mongo-driver/mongo"
- "go.mongodb.org/mongo-driver/mongo/options"
+	"fmt"
+    "context"
+	"github.com/go-redis/redis/v8"
 )
 
-type Message struct{
-	from string
-	to string
-	message string
-}
+func Connect_Redis() *redis.Client{
+    // Create a new context
+    ctx := context.Background()
 
-func Connect() *mongo.Collection {
-    // Find .evn
-    // err := godotenv.Load(".env")
-    // if err != nil {
-    //     log.Fatalf("Error loading .env file: %s", err)
-    // }
-
-    // // Get value from .env
-    // MONGO_URI := os.Getenv("MONGO_URI")
-
-	MONGO_URI := "mongodb://localhost:27017/"
-
- // Connect to the database.
- clientOption := options.Client().ApplyURI(MONGO_URI)
- client, err := mongo.Connect(context.Background(), clientOption)
- if err != nil {
-  log.Fatal(err)
- }
-
- // Check the connection.
- err = client.Ping(context.Background(), nil)
- if err != nil {
-  log.Fatal(err)
- }
-
- // Create collection
- Collection := client.Database("assign_work").Collection("chats")
- if err != nil {
-     log.Fatal(err)
- }
-
- fmt.Println("Connected to db")
-
- return Collection
-}
-
-type MyRecord struct {
-    Message string `bson:"message"`
-}
-
-func Insert_record(message string) {
-    collection := Connect()
-
-    record := MyRecord{
-        Message: message,
-    }
-
-    result, err := collection.InsertOne(context.TODO(), record)
+    // Create Redis client
+    rdb := redis.NewClient(&redis.Options{
+        Addr:     "redis-10406.c330.asia-south1-1.gce.redns.redis-cloud.com:10406",  // Redis Cloud endpoint
+        Password: "D0roIfwjRbkd39pUIufh5mt0RLA7IumT",         // Redis Cloud password
+        DB:       0,                       // Default DB
+    })
+    pong, err := rdb.Ping(ctx).Result()
     if err != nil {
-        log.Printf("Error inserting record: %v", err)
-        return
+        fmt.Println("Failed to connect to Redis:", err)
     }
+    fmt.Println("Connected to Redis:", pong)
 
-    log.Printf("Record inserted: %v", result.InsertedID)
+    return rdb
+
 }
