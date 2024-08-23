@@ -217,19 +217,19 @@
             }).then((data) => {
                 console.log("otp aa gya")
                 // Now we have a OTP, send a Request to Connect to WebSocket
-                connectWebsocket(data.otp);
+                connectWebsocket(data.otp,formData.username);
             }).catch((e) => { alert(e) });
             return false;
         }
         /**
          * ConnectWebsocket will connect to websocket and add listeners
          * */
-        function connectWebsocket(otp) {
+        function connectWebsocket(otp,username) {
             // Check if the browser supports WebSocket
             if (window["WebSocket"]) {
                 console.log("supports websockets");
                 // Connect to websocket using OTP as a GET parameter
-                conn = new WebSocket("ws://" + document.location.host + "/ws?otp=" + otp);
+                conn = new WebSocket("ws://" + document.location.host + "/ws?username=" + username + "&otp=" + otp);
 
                 // Onopen
                 conn.onopen = function (evt) {

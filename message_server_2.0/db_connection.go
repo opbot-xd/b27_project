@@ -14,7 +14,8 @@ import (
 type Message struct{
 	from string
 	to string
-	message string
+	ps string
+    link string
 }
 
 func Connect() *mongo.Collection {
@@ -54,14 +55,20 @@ func Connect() *mongo.Collection {
 }
 
 type MyRecord struct {
-    Message string `bson:"message"`
+    To string `bson:"to"`
+    PS string `bson:"ps"`
+    Link string `bson:"link"`
+    From string `bson:"from"`
 }
 
-func Insert_record(message string) {
+func Insert_record(to string,ps string,from string,link string) {
     collection := Connect()
 
     record := MyRecord{
-        Message: message,
+        To: to,
+        PS: ps,
+        Link: link,
+        From: from,
     }
 
     result, err := collection.InsertOne(context.TODO(), record)

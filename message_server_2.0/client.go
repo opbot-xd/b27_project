@@ -13,6 +13,7 @@ type ClientList map[*Client]bool
 
 // Client is a websocket client, basically a frontend visitor
 type Client struct {
+	username string
 	// the websocket connection
 	connection *websocket.Conn
 
@@ -34,8 +35,9 @@ type Client struct {
 // )
 
 // NewClient is used to initialize a new Client with all required values initialized
-func NewClient(conn *websocket.Conn, manager *Manager) *Client {
+func NewClient(username string,conn *websocket.Conn, manager *Manager) *Client {
 	return &Client{
+		username : username,
 		connection: conn,
 		manager:    manager,
 		egress:     make(chan Event),

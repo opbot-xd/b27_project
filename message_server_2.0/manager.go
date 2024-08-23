@@ -134,8 +134,24 @@ func (m *Manager) loginHandler(w http.ResponseWriter, r *http.Request) {
 
 // serveWS is a HTTP Handler that the has the Manager that allows connections
 func (m *Manager) serveWS(w http.ResponseWriter, r *http.Request) {
-
+	// username := r.Body.username;
 	// Grab the OTP in the Get param
+	// type User struct {
+	// 	Username string `json:"username"`
+	// }
+	// var user User
+    // err := json.NewDecoder(r.Body).Decode(&user)
+    // if err != nil {
+    //     // Handle error
+    //     http.Error(w, "Invalid request data", http.StatusBadRequest)
+    //     return
+    // }
+
+    // // Access the username from the decoded user object
+    // username := user.Username
+	// log.Println(username)
+	username := r.URL.Query().Get("username")
+
 	otp := r.URL.Query().Get("otp")
 	if otp == "" {
 		// Tell the user its not authorized
@@ -150,6 +166,7 @@ func (m *Manager) serveWS(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Println("New connection")
+	log.Println(username)
 	// Begin by upgrading the HTTP request
 	conn, err := websocketUpgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -158,7 +175,7 @@ func (m *Manager) serveWS(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create New Client
-	client := NewClient(conn, m)
+	client := NewClient(username,conn, m)
 	// Add the newly created client to the manager
 	m.addClient(client)
 
