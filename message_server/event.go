@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 )
 
@@ -77,6 +78,23 @@ func SendMessageHandler(event Event, c *Client) error {
 		}
 
 	}
+	newMessage := map[string]interface{}{
+        "From": broadMessage.From,
+        "Message":  broadMessage.Message,
+		"Time": time.Now(),
+    }
+
+	log.Println(newMessage);
+
+	erroR := SetMap(broadMessage.From, newMessage)
+    if erroR != nil {
+        log.Printf("Failed to set user: %v", err)
+    }
+	// var error_redis = SetMap(broadMessage.From,"time","now","message",broadMessage.Message);
+	// if error_redis!=nil{
+	// 	log.Println("redis bt de rha hai abhi to")
+	// }
+
 	return nil
 }
 
