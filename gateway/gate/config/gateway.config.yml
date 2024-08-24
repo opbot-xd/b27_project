@@ -1,0 +1,59 @@
+http:
+  port: 8080
+
+apiEndpoints:
+  auth:
+    host: '*'
+    paths: '/auth/*'
+  web:
+    host: '*'
+    paths: '/web/*'
+  chat:
+    host: '*'
+    paths: '/chat/*'
+
+serviceEndpoints:
+  authService:
+    url: 'http://localhost:3000'
+  backendService:
+    url: 'http://localhost:3001'
+  chatService:
+    url: 'http://localhost:3002'
+
+policies:
+  - jwt:
+  - proxy:
+
+pipelines:
+  authPipeline:
+    apiEndpoints:
+      - auth
+    policies:
+      - proxy:
+          - action:
+              serviceEndpoint: authService
+              changeOrigin: true
+
+  webPipeline:
+    apiEndpoints:
+      - web
+    policies:
+      - jwt:
+          - action:
+              secretOrPublicKey: 'your-secret-key'
+      - proxy:
+          - action:
+              serviceEndpoint: backendService
+              changeOrigin: true
+
+  chatPipeline:
+    apiEndpoints:
+      - chat
+    policies:
+      - jwt:
+          - action:
+              secretOrPublicKey: 'your-secret-key'
+      - proxy:
+          - action:
+              serviceEndpoint: chatService
+              changeOrigin: true
