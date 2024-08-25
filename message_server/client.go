@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"log"
 	// "time"
-
+	"fmt"
+	// "errors"
 	"github.com/gorilla/websocket"
 )
 
@@ -21,7 +22,7 @@ type Client struct {
 	// egress is used to avoid concurrent writes on the WebSocket
 	egress chan Event
 	// chatroom is used to know what room user is in
-	chatroom string
+	username string
 }
 
 // var (
@@ -34,13 +35,18 @@ type Client struct {
 // )
 
 // NewClient is used to initialize a new Client with all required values initialized
-func NewClient(conn *websocket.Conn, manager *Manager) *Client {
+func NewClient(conn *websocket.Conn, manager *Manager, username string) *Client {
 	return &Client{
 		connection: conn,
 		manager:    manager,
 		egress:     make(chan Event),
+		username: username,
 	}
 }
+
+// type struct_intermediate struct{
+// 	From string 
+// }
 
 // readMessages will start the client to read messages and handle them
 // appropriatly.
@@ -97,19 +103,52 @@ func (c *Client) readMessages() {
 // }
 
 // writeMessages is a process that listens for new messages to output to the Client
-func (c *Client) writeMessages() {
+func (c *Client) writeMessages(messages []HistoryEvent) {
 	// Create a ticker that triggers a ping at given interval
 	// ticker := time.NewTicker(pingInterval)
 	defer func() {
-		// ticker.Stop()
-		// Graceful close if this triggers a closing
 		c.manager.removeClient(c)
 	}()
+	for i := range messages { 
+		log.Println(messages[i])
+		// var 
+	data, err := json.Marshal(messages[i])
+	if err != nil {
+		fmt.Printf("failed to marshal history message: %v", err)
+	}
+		var messageEvent Event
+		messageEvent.Payload = data
+		messageEvent.Type = "new_message"
+		fmt.Println(messageEvent)
+		// c.egress <-	messageEvent 
+		// message,ok:= <-c.egress
+		// log.Printf("ye rha channel ka message : %v",message)
+		// 	if !ok {
+		// 		// Manager has closed this connection channel, so communicate that to frontend
+		// 		if err := c.connection.WriteMessage(websocket.CloseMessage, nil); err != nil {
+		// 			// Log that the connection is closed and the reason
+		// 			log.Println("connection closed: ", err)
+		// 		}
+		// 		// Return to close the goroutine
+		// 		return
+		// 	}
 
-	for {
+			data_history, err_history := json.Marshal(messageEvent)
+			if err != nil {
+				log.Println(err_history)
+				return // closes the connection, should we really
+			}
+			// Write a Regular text message to the connection
+			if err := c.connection.WriteMessage(websocket.TextMessage, data_history); err != nil {
+				log.Println(err)
+			}
+			log.Println("sent message")
+	}
+
+	for{
 		select {
 		case message, ok := <-c.egress:
-			// Ok will be false Incase the egress channel is closed
+			log.Printf("ye rha channel ka message : %v",message)
 			if !ok {
 				// Manager has closed this connection channel, so communicate that to frontend
 				if err := c.connection.WriteMessage(websocket.CloseMessage, nil); err != nil {

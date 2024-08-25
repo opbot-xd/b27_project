@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"sync"
@@ -104,7 +105,7 @@ func (m *Manager) loginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Authenticate user / Verify Access token, what ever auth method you use
-	if req.Username == "percy" && req.Password == "123" {
+	if (req.Username == "percy" && req.Password == "123") || (req.Username == "siddharth" && req.Password == "123") || (req.Username == "deenank" && req.Password == "123") {
 		// format to return otp in to the frontend
 		type response struct {
 			OTP string `json:"otp"`
@@ -112,7 +113,7 @@ func (m *Manager) loginHandler(w http.ResponseWriter, r *http.Request) {
 
 		// add a new OTP
 		otp := m.otps.NewOTP()
-
+		log.Println(otp)
 		resp := response{
 			OTP: otp.Key,
 		}
@@ -137,6 +138,8 @@ func (m *Manager) serveWS(w http.ResponseWriter, r *http.Request) {
 
 	// Grab the OTP in the Get param
 	otp := r.URL.Query().Get("otp")
+	username:=r.URL.Query().Get("username")
+	log.Println(username)
 	if otp == "" {
 		// Tell the user its not authorized
 		w.WriteHeader(http.StatusUnauthorized)
@@ -158,12 +161,14 @@ func (m *Manager) serveWS(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create New Client
-	client := NewClient(conn, m)
+	client := NewClient(conn, m, username)
 	// Add the newly created client to the manager
 	m.addClient(client)
+	fmt.Printf("idhar")
+	var messages []HistoryEvent = Get_Chats(username)
 
 	go client.readMessages()
-	go client.writeMessages()
+	go client.writeMessages(messages)
 }
 
 // addClient will add clients to our clientList

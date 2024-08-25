@@ -17,11 +17,11 @@
         <!--
         Here is a form that allows us to select what Chatroom to be in
         -->
-        <form id="chatroom-selection">
+        <!-- <form id="chatroom-selection">
             <label for="chatroom">Chatroom:</label>
             <input type="text" id="chatroom" name="chatroom"><br><br>
             <input type="submit" value="Change chatroom">
-        </form>
+        </form> -->
 
         <br>
         <!--
@@ -35,6 +35,8 @@
         Chatroom-message form is used to send messages
         -->
         <form id="chatroom-message">
+            <label for="to">To:</label>
+            <input type="text" id="to" name="to"><br><br>
             <label for="message">Message:</label>
             <input type="text" id="message" name="message"><br><br>
             <input type="submit" value="Send message">
@@ -80,7 +82,8 @@
          * SendMessageEvent is used to send messages to other clients
          * */
         class SendMessageEvent {
-            constructor(message, from) {
+            constructor(to,message, from) {
+                this.to = to;
                 this.message = message;
                 this.from = from;
             }
@@ -89,7 +92,8 @@
          * NewMessageEvent is messages comming from clients
          * */
         class NewMessageEvent {
-            constructor(message, from, sent) {
+            constructor(to,message, from, sent) {
+                this.to=to;
                 this.message = message;
                 this.from = from;
                 this.sent = sent;
@@ -122,9 +126,10 @@
          * appendChatMessage takes in new messages and adds them to the chat
          * */
         function appendChatMessage(messageEvent) {
-            var date = new Date(messageEvent.sent);
+            // console.log(messageEvent.time)
+            // var date = (messageEvent.time)
             // format message
-            const formattedMsg = `${date.toLocaleString()}: ${messageEvent.message}`;
+            const formattedMsg = `${messageEvent.time}: from ${messageEvent.from} : ${messageEvent.message}`;
             // Append Message
             textarea = document.getElementById("chatmessages");
             textarea.innerHTML = textarea.innerHTML + "\n" + formattedMsg;
@@ -142,28 +147,37 @@
         /**
          * changeChatRoom will update the value of selectedchat
          * and also notify the server that it changes chatroom
-         * */
-        function changeChatRoom() {
-            // Change Header to reflect the Changed chatroom
-            var newchat = document.getElementById("chatroom");
-            if (newchat != null && newchat.value != selectedchat) {
-                selectedchat = newchat.value;
-                header = document.getElementById("chat-header").innerHTML = "Currently in chat: " + selectedchat;
-
-                let changeEvent = new ChangeChatRoomEvent(selectedchat);
-                sendEvent("change_room", changeEvent);
-                textarea = document.getElementById("chatmessages");
-                textarea.innerHTML = `You changed room into: ${selectedchat}`;
-            }
-            return false;
-        }
+        //  * */
+        // function changeChatRoom() {
+        //     // Change Header to reflect the Changed chatroom
+        //     // var newchat = document.getElementById("chatroom");
+        //     var from = document.getElementById("username").value
+        //     var to = document.getElementById("to").value
+        //     console.log(from)
+        //     console.log(to)
+        //     if (document.getElementById("chat-header").innerHTML = "Currently in chat: " + from + "&" + to) {
+        //         header = document.getElementById("chat-header").innerHTML = "Currently in chat: " + from + "&" + to;
+        //         selectedchat = from+"&"+to;
+        //         let changeEvent = new ChangeChatRoomEvent(selectedchat);
+        //         sendEvent("change_room", changeEvent);
+        //         textarea = document.getElementById("chatmessages");
+        //         textarea.innerHTML = `You changed room into: ${selectedchat}`;
+        //     }
+        //     return false;
+        // }
         /**
          * sendMessage will send a new message onto the Chat
          * */
-        function sendMessage() {
-            var newmessage = document.getElementById("message");
+        function sendMessage(event) {
+            event.preventDefault()
+            // cons
+            var newmessage = document.getElementById("message").value;
+            var username = document.getElementById("username").value;
+            var to = document.getElementById("to").value
             if (newmessage != null) {
-                let outgoingEvent = new SendMessageEvent(newmessage.value, "percy");
+                let outgoingEvent = new SendMessageEvent(to , newmessage, username);
+                console.log(outgoingEvent)
+                // changeChatRoom()
                 sendEvent("send_message", outgoingEvent)
             }
             return false;
@@ -202,6 +216,7 @@
                 }
             }).then((data) => {
                 // Now we have a OTP, send a Request to Connect to WebSocket
+                console.log(data.otp)
                 connectWebsocket(data.otp);
             }).catch((e) => { alert(e) });
             return false;
@@ -210,12 +225,13 @@
          * ConnectWebsocket will connect to websocket and add listeners
          * */
         function connectWebsocket(otp) {
+            var username = document.getElementById("username").value
             // Check if the browser supports WebSocket
             if (window["WebSocket"]) {
                 console.log("supports websockets");
                 // Connect to websocket using OTP as a GET parameter
-                conn = new WebSocket("ws://" + document.location.host + "/ws?otp=" + otp);
-
+                conn = new WebSocket("ws://" + document.location.host + "/ws?otp=" + otp + "&username=" + username);
+                console.log(username)
                 // Onopen
                 conn.onopen = function (evt) {
                     document.getElementById("connection-header").innerHTML = "Connected to Websocket: true";
@@ -247,7 +263,7 @@
         window.onload = function () {
             // Apply our listener functions to the submit event on both forms
             // we do it this way to avoid redirects
-            document.getElementById("chatroom-selection").onsubmit = changeChatRoom;
+            // document.getElementById("chatroom-selection").onsubmit = changeChatRoom;
             document.getElementById("chatroom-message").onsubmit = sendMessage;
             document.getElementById("login-form").onsubmit = login;
 

@@ -14,6 +14,7 @@ func main() {
 	ctx, cancel := context.WithCancel(rootCtx)
 
 	defer cancel()
+	Connect_with_chats()
 	Connect_Redis()
 	setupAPI(ctx)
 

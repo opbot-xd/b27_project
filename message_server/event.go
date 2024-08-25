@@ -34,6 +34,7 @@ const (
 // SendMessageEvent is the payload sent in the
 // send_message event
 type SendMessageEvent struct {
+	To string `json:"to"`
 	Message string `json:"message"`
 	From    string `json:"from"`
 }
@@ -41,7 +42,7 @@ type SendMessageEvent struct {
 // NewMessageEvent is returned when responding to send_message
 type NewMessageEvent struct {
 	SendMessageEvent
-	Sent time.Time `json:"sent"`
+	Time time.Time `json:"time"`
 }
 
 
@@ -57,7 +58,8 @@ func SendMessageHandler(event Event, c *Client) error {
 	// Prepare an Outgoing Message to others
 	var broadMessage NewMessageEvent
 
-	broadMessage.Sent = time.Now()
+	broadMessage.Time = time.Now()
+	broadMessage.To = chatevent.To
 	broadMessage.Message = chatevent.Message
 	broadMessage.From = chatevent.From
 
@@ -73,23 +75,21 @@ func SendMessageHandler(event Event, c *Client) error {
 	// Broadcast to all other Clients
 	for client := range c.manager.clients {
 		// Only send to clients inside the same chatroom
-		if client.chatroom == c.chatroom {
+		if client.username == broadMessage.To || client.username == broadMessage.From {
 			client.egress <- outgoingEvent
 		}
-
 	}
+
 	newMessage := map[string]interface{}{
+		"To":broadMessage.To,
         "From": broadMessage.From,
         "Message":  broadMessage.Message,
 		"Time": time.Now(),
     }
 
-	log.Println(newMessage);
+	log.Println(broadMessage.To,newMessage);
 
-	erroR := SetMap(broadMessage.From, newMessage)
-    if erroR != nil {
-        log.Printf("Failed to set user: %v", err)
-    }
+	Insert_Chat(broadMessage.From,broadMessage.To,broadMessage.Message,broadMessage.Time.Local().String())
 	// var error_redis = SetMap(broadMessage.From,"time","now","message",broadMessage.Message);
 	// if error_redis!=nil{
 	// 	log.Println("redis bt de rha hai abhi to")
@@ -111,7 +111,7 @@ func ChatRoomHandler(event Event, c *Client) error {
 	}
 
 	// Add Client to chat room
-	c.chatroom = changeRoomEvent.Name
+	// c.chatroom = changeRoomEvent.Name
 
 	return nil
 }
