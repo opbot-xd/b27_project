@@ -13,46 +13,48 @@ apiEndpoints:
     paths: '/chat/*'
 
 serviceEndpoints:
-  authService:
-    url: 'http://localhost:3000'
   backendService:
     url: 'http://localhost:3001'
   chatService:
     url: 'http://localhost:3002'
 
 policies:
+  - custom-auth:
   - jwt:
   - proxy:
 
 pipelines:
+  # Pipeline for handling authentication
   authPipeline:
     apiEndpoints:
       - auth
     policies:
-      - proxy:
-          - action:
-              serviceEndpoint: authService
-              changeOrigin: true
+      - custom-auth:
+          secretOrPrivateKey: ${JWT_SECRET}
 
+  # Pipeline for protecting web endpoints
   webPipeline:
     apiEndpoints:
       - web
     policies:
       - jwt:
           - action:
-              secretOrPublicKey: 'your-secret-key'
+              secretOrPublicKey: ${JWT_SECRET}
+              userProperty: 'user'
       - proxy:
           - action:
               serviceEndpoint: backendService
               changeOrigin: true
 
+  # Pipeline for protecting chat endpoints
   chatPipeline:
     apiEndpoints:
       - chat
     policies:
       - jwt:
           - action:
-              secretOrPublicKey: 'your-secret-key'
+              secretOrPublicKey: ${JWT_SECRET}
+              userProperty: 'user'
       - proxy:
           - action:
               serviceEndpoint: chatService
