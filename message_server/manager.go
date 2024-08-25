@@ -166,7 +166,7 @@ func (m *Manager) serveWS(w http.ResponseWriter, r *http.Request) {
 	m.addClient(client)
 	fmt.Printf("idhar")
 	var messages []HistoryEvent = Get_Chats(username)
-
+	SetKey("username",username)
 	go client.readMessages()
 	go client.writeMessages(messages)
 }
@@ -188,6 +188,9 @@ func (m *Manager) removeClient(client *Client) {
 
 	// Check if Client exists, then delete it
 	if _, ok := m.clients[client]; ok {
+
+		//deleting redis key to show that user is logged out
+		DelKey(client.username)
 		// close connection
 		client.connection.Close()
 		// remove

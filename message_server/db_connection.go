@@ -39,6 +39,12 @@ func GetKey(key string) (string, error) {
     return rdb.Get(ctx, key).Result()
 }
 
+func DelKey(key string){
+    rdb.Del(ctx,key);
+    log.Printf("key deleted : %v ",key)
+}
+
+
 func SetMap(key string,fields map[string]interface{}) error {
     // Start a new pipeline
     pipe := rdb.Pipeline()
