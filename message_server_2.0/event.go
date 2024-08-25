@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 )
 
@@ -37,6 +38,8 @@ type SendMessageEvent struct {
 	PS string `json:"ps"`
 	Link string `json:"link"`
 	From    string `json:"from"`
+	Remarks string `json:"remarks"`
+	Deadline string `json:"deadline"`
 }
 
 // NewMessageEvent is returned when responding to send_message
@@ -54,19 +57,21 @@ func SendMessageHandler(event Event, c *Client) error {
 	if err := json.Unmarshal(event.Payload, &chatevent); err != nil {
 		return fmt.Errorf("bad payload in request: %v", err)
 	}
+	log.Println(chatevent)
 
 	// Prepare an Outgoing Message to others
-	var broadMessage NewMessageEvent
+	// var broadMessage NewMessageEvent
 
-	broadMessage.Sent = time.Now()
-	broadMessage.PS = chatevent.PS
-	broadMessage.Link = chatevent.Link
-	broadMessage.From = chatevent.From
+	// broadMessage.Sent = time.Now()
+	// broadMessage.PS = chatevent.PS
+	// broadMessage.Link = chatevent.Link
+	// broadMessage.From = chatevent.From
 	
-	data, err := json.Marshal(broadMessage)
+	data, err := json.Marshal(chatevent)
 	if err != nil {
 		return fmt.Errorf("failed to marshal broadcast message: %v", err)
 	}
+	log.Println(chatevent)
 
 	
 
@@ -78,12 +83,12 @@ func SendMessageHandler(event Event, c *Client) error {
 	// Broadcast to all other Clients
 	for client := range c.manager.clients {
 		// Only send to clients inside the same chatroom
-		if client.chatroom == c.chatroom && client.username == c.username{
+		if client.username == chatevent.To{
 			client.egress <- outgoingEvent
 		}
 
 	}
-	Insert_record(chatevent.To ,chatevent.PS ,chatevent.From ,chatevent.Link)
+	Insert_record(chatevent.From,chatevent.To,chatevent.PS,chatevent.Link,chatevent.Remarks,chatevent.Deadline)
 	return nil
 }
 

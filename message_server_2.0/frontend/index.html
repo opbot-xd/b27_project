@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Assign Work</title>
+    <title>PP - Websockets</title>
 </head>
 
 <body>
@@ -17,11 +17,11 @@
         <!--
         Here is a form that allows us to select what Chatroom to be in
         -->
-        <form id="chatroom-selection">
+        <!-- <form id="chatroom-selection">
             <label for="chatroom">Chatroom:</label>
             <input type="text" id="chatroom" name="chatroom"><br><br>
             <input type="submit" value="Change chatroom">
-        </form>
+        </form> -->
 
         <br>
         <!--
@@ -37,10 +37,14 @@
         <form id="chatroom-message">
             <label for="to">To:</label>
             <input type="text" id="to" name="to"><br><br>
-            <label for="ps">Problem Statement:</label>
-            <input type="text" id="ps" name="ps"><br><br>
+            <label for="problem">Problem:</label>
+            <input type="text" id="problem" name="problem"><br><br>
             <label for="link">Link:</label>
             <input type="text" id="link" name="link"><br><br>
+            <label for="remarks">Remarks:</label>
+            <input type="text" id="remarks" name="remarks"><br><br>
+            <label for="deadline">Deadline:</label>
+            <input type="date" id="deadline" name="deadline"><br><br>
             <input type="submit" value="Send message">
         </form>
 
@@ -66,7 +70,7 @@
 
         // selectedchat is by default General.
         var selectedchat = "general";
-        var conn;
+
         /**
          * Event is used to wrap all messages Send and Recieved
          * on the Websocket
@@ -84,58 +88,110 @@
          * SendMessageEvent is used to send messages to other clients
          * */
         class SendMessageEvent {
-            constructor(to , ps, link,from) {
+            constructor(from, to, ps, link, remarks, deadline) {
+                this.from = from;
                 this.to = to;
                 this.ps = ps;
                 this.link = link;
-                this.from = from;
+                this.remarks = remarks;
+                this.deadline = deadline;
             }
         }
         /**
          * NewMessageEvent is messages comming from clients
-         * */
-        class NewMessageEvent {
-            constructor(to,ps,link, from, sent) {
-                this.to = to;
-                this.ps = ps;
-                this.link = link;
-                // this.message = message;
-                this.from = from;
-                this.sent = sent;
-            }
-        }
+        //  **/
+        // class NewMessageEvent {
+        //     constructor(From, To, PS, Link, Remarks, Deadline) {
+        //         this.From = From
+        //         this.To = To;
+        //         this.PS = PS;
+        //         this.Link = Link;
+        //         this.Remarks = Remarks;
+        //         this.Deadline = Deadline;
+        //     }
+        // }
 
         /**
          * routeEvent is a proxy function that routes
          * events into their correct Handler
          * based on the type field
          * */
-        function routeEvent(event) {
+        // function routeEvent(event) {
 
+        //     if (event.type === undefined) {
+        //         alert("no 'type' field in event");
+        //     }
+        //     switch (event.type) {
+        //         case "new_message":
+        //             // Format payload
+        //             console.log(event.payload)
+        //             const messageEvent = Object.assign(new NewMessageEvent, event.payload);
+        //             console.log("ye hai yaha", messageEvent)
+        //             appendChatMessage(messageEvent);
+        //             break;
+        //         default:
+        //             alert("unsupported message type");
+        //             break;
+        //     }
+
+        // }
+        function routeEvent(event) {
             if (event.type === undefined) {
                 alert("no 'type' field in event");
             }
             switch (event.type) {
                 case "new_message":
-                    // Format payload
-                    const messageEvent = Object.assign(new NewMessageEvent, event.payload);
+                    console.log(event.payload);
+                    const messageEvent = createNewMessageEvent(event.payload);
+                    console.log("ye hai yaha", messageEvent);
                     appendChatMessage(messageEvent);
                     break;
                 default:
                     alert("unsupported message type");
                     break;
             }
+        }
 
+        function createNewMessageEvent(payload) {
+            return new NewMessageEvent(
+                payload.from || payload.From || '',
+                payload.to || payload.To || '',
+                payload.ps || payload.PS || '',
+                payload.link || payload.Link || '',
+                payload.remarks || payload.Remarks || '',
+                payload.deadline || payload.Deadline || ''
+            );
+        }
+
+        class NewMessageEvent {
+            constructor(From, To, PS, Link, Remarks, Deadline) {
+                this.From = From;
+                this.To = To;
+                this.PS = PS;
+                this.Link = Link;
+                this.Remarks = Remarks;
+                this.Deadline = Deadline;
+            }
         }
         /**
          * appendChatMessage takes in new messages and adds them to the chat
          * */
         function appendChatMessage(messageEvent) {
-            var date = new Date(messageEvent.sent);
-            // format message
-            const formattedMsg = `${date.toLocaleString()}: ${messageEvent.ps}`;
+            console.log(messageEvent);
+
+            // Store values in variables with OR condition for all fields
+            const from = messageEvent.from || messageEvent.From || '';
+            const to = messageEvent.to || messageEvent.To || '';
+            const problemStatement = messageEvent.ps || messageEvent.PS || '';
+            const link = messageEvent.link || messageEvent.Link || '';
+            const remarks = messageEvent.remarks || messageEvent.Remarks || '';
+            const deadline = messageEvent.deadline || messageEvent.Deadline || '';
+
+            // Format message using the variables
+            const formattedMsg = `From : ${from}\nTo : ${to}\nProblem Statement : ${problemStatement}\nLink : ${link}\nRemarks : ${remarks}\nDeadline : ${deadline}`;
+
             // Append Message
-            textarea = document.getElementById("chatmessages");
+            const textarea = document.getElementById("chatmessages");
             textarea.innerHTML = textarea.innerHTML + "\n" + formattedMsg;
             textarea.scrollTop = textarea.scrollHeight;
         }
@@ -151,46 +207,47 @@
         /**
          * changeChatRoom will update the value of selectedchat
          * and also notify the server that it changes chatroom
-         * */
-        function changeChatRoom() {
-            // Change Header to reflect the Changed chatroom
-            var newchat = document.getElementById("chatroom");
-            if (newchat != null && newchat.value != selectedchat) {
-                selectedchat = newchat.value;
-                header = document.getElementById("chat-header").innerHTML = "Currently in chat: " + selectedchat;
-
-                let changeEvent = new ChangeChatRoomEvent(selectedchat);
-                sendEvent("change_room", changeEvent);
-                textarea = document.getElementById("chatmessages");
-                textarea.innerHTML = `You changed room into: ${selectedchat}`;
-            }
-            return false;
-        }
+        //  * */
+        // function changeChatRoom() {
+        //     // Change Header to reflect the Changed chatroom
+        //     // var newchat = document.getElementById("chatroom");
+        //     var from = document.getElementById("username").value
+        //     var to = document.getElementById("to").value
+        //     console.log(from)
+        //     console.log(to)
+        //     if (document.getElementById("chat-header").innerHTML = "Currently in chat: " + from + "&" + to) {
+        //         header = document.getElementById("chat-header").innerHTML = "Currently in chat: " + from + "&" + to;
+        //         selectedchat = from+"&"+to;
+        //         let changeEvent = new ChangeChatRoomEvent(selectedchat);
+        //         sendEvent("change_room", changeEvent);
+        //         textarea = document.getElementById("chatmessages");
+        //         textarea.innerHTML = `You changed room into: ${selectedchat}`;
+        //     }
+        //     return false;
+        // }
         /**
          * sendMessage will send a new message onto the Chat
          * */
-        function sendMessage() {
-            var to = document.getElementById("to");
-            var ps = document.getElementById("ps");
-            var link = document.getElementById("link");
-            var from = document.getElementById("username");
-
-            if (ps != null) {
-                let outgoingEvent = new SendMessageEvent(to.value,ps.value,link.value,from.value);
+        function sendMessage(event) {
+            event.preventDefault()
+            // cons
+            var from = document.getElementById("username").value;
+            var to = document.getElementById("to").value;
+            var problem = document.getElementById("problem").value;
+            var link = document.getElementById("link").value;
+            var remarks = document.getElementById("remarks").value;
+            var deadline = document.getElementById("deadline").value;
+            if (problem != null) {
+                let outgoingEvent = new SendMessageEvent(from, to, problem, link, remarks, deadline);
+                console.log(outgoingEvent)
                 sendEvent("send_message", outgoingEvent)
             }
             return false;
         }
 
-        /**
-         * sendEvent
-         * eventname - the event name to send on
-         * payload - the data payload
-         * */
         function sendEvent(eventName, payload) {
             // Create a event Object with a event named send_message
             const event = new Event(eventName, payload);
-            console.log("hello ji chal rha hai");
             // Format as JSON and send
             conn.send(JSON.stringify(event));
         }
@@ -215,22 +272,23 @@
                     throw 'unauthorized';
                 }
             }).then((data) => {
-                console.log("otp aa gya")
                 // Now we have a OTP, send a Request to Connect to WebSocket
-                connectWebsocket(data.otp,formData.username);
+                console.log(data.otp)
+                connectWebsocket(data.otp);
             }).catch((e) => { alert(e) });
             return false;
         }
         /**
          * ConnectWebsocket will connect to websocket and add listeners
          * */
-        function connectWebsocket(otp,username) {
+        function connectWebsocket(otp) {
+            var username = document.getElementById("username").value
             // Check if the browser supports WebSocket
             if (window["WebSocket"]) {
                 console.log("supports websockets");
                 // Connect to websocket using OTP as a GET parameter
-                conn = new WebSocket("ws://" + document.location.host + "/ws?username=" + username + "&otp=" + otp);
-
+                conn = new WebSocket("ws://" + document.location.host + "/ws?otp=" + otp + "&username=" + username);
+                console.log(username)
                 // Onopen
                 conn.onopen = function (evt) {
                     document.getElementById("connection-header").innerHTML = "Connected to Websocket: true";
@@ -243,7 +301,6 @@
 
                 // Add a listener to the onmessage event
                 conn.onmessage = function (evt) {
-
                     console.log(evt);
                     // parse websocket message as JSON
                     const eventData = JSON.parse(evt.data);
@@ -263,7 +320,7 @@
         window.onload = function () {
             // Apply our listener functions to the submit event on both forms
             // we do it this way to avoid redirects
-            document.getElementById("chatroom-selection").onsubmit = changeChatRoom;
+            // document.getElementById("chatroom-selection").onsubmit = changeChatRoom;
             document.getElementById("chatroom-message").onsubmit = sendMessage;
             document.getElementById("login-form").onsubmit = login;
 

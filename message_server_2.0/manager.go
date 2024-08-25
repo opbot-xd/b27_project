@@ -104,7 +104,7 @@ func (m *Manager) loginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Authenticate user / Verify Access token, what ever auth method you use
-	if req.Username == "percy" && req.Password == "123" {
+	if (req.Username == "percy" && req.Password == "123") ||  (req.Username == "siddharth" && req.Password == "123") ||  (req.Username == "deenank" && req.Password == "123")   {
 		// format to return otp in to the frontend
 		type response struct {
 			OTP string `json:"otp"`
@@ -178,9 +178,10 @@ func (m *Manager) serveWS(w http.ResponseWriter, r *http.Request) {
 	client := NewClient(username,conn, m)
 	// Add the newly created client to the manager
 	m.addClient(client)
+	messages := Get_record(username)
 
 	go client.readMessages()
-	go client.writeMessages()
+	go client.writeMessages(messages)
 }
 
 // addClient will add clients to our clientList

@@ -1,22 +1,19 @@
 package main
 
 import (
- "context"
- "fmt"
- "log"
-//  "os"
+	"context"
+	"fmt"
+	"log"
 
-//  "github.com/joho/godotenv"
- "go.mongodb.org/mongo-driver/mongo"
- "go.mongodb.org/mongo-driver/mongo/options"
+	//  "os"
+
+	//  "github.com/joho/godotenv"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type Message struct{
-	from string
-	to string
-	ps string
-    link string
-}
+
 
 func Connect() *mongo.Collection {
     // Find .evn
@@ -44,7 +41,7 @@ func Connect() *mongo.Collection {
  }
 
  // Create collection
- Collection := client.Database("assign_work").Collection("chats")
+ Collection := client.Database("assign_work").Collection("works")
  if err != nil {
      log.Fatal(err)
  }
@@ -55,20 +52,24 @@ func Connect() *mongo.Collection {
 }
 
 type MyRecord struct {
+    From string `bson:"from"`
     To string `bson:"to"`
     PS string `bson:"ps"`
     Link string `bson:"link"`
-    From string `bson:"from"`
+    Remarks string `bson:"remarks"`
+    Deadline string `bson:"deadline"`
 }
 
-func Insert_record(to string,ps string,from string,link string) {
+func Insert_record(from string,to string,ps string,link string,remarks string,deadline string) {
     collection := Connect()
 
     record := MyRecord{
+        From: from,
         To: to,
         PS: ps,
         Link: link,
-        From: from,
+        Remarks: remarks,
+        Deadline: deadline,
     }
 
     result, err := collection.InsertOne(context.TODO(), record)
@@ -78,4 +79,38 @@ func Insert_record(to string,ps string,from string,link string) {
     }
 
     log.Printf("Record inserted: %v", result.InsertedID)
+}
+
+func Get_record(username string) []MyRecord {
+    collection := Connect()
+
+    // Create a filter for the username
+    filter := bson.M{"to": username}
+
+    // Find all documents that match the filter
+    cursor, err := collection.Find(context.TODO(), filter)
+    if err != nil {
+        log.Printf("Error finding records: %v", err)
+        return nil
+    }
+    defer cursor.Close(context.TODO())
+
+    var results []MyRecord
+
+    for cursor.Next(context.TODO()) {
+        var record MyRecord
+        err := cursor.Decode(&record)
+        if err != nil {
+            log.Printf("Error decoding record: %v", err)
+            continue
+        }
+        results = append(results, record)
+    }
+
+    if err := cursor.Err(); err != nil {
+        log.Printf("Cursor error: %v", err)
+        return nil
+    }
+
+    return results
 }
