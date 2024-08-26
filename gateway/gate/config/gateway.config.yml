@@ -1,61 +1,83 @@
 http:
   port: 8080
-
+admin:
+  port: 9876
+  host: localhost
 apiEndpoints:
-  auth:
-    host: '*'
-    paths: '/auth/*'
-  web:
-    host: '*'
-    paths: '/web/*'
+  api:
+    host: localhost
+    paths: '/api/*'
   chat:
-    host: '*'
+    host: localhost
     paths: '/chat/*'
-
+  web:
+    host: localhost
+    paths: '/web/*'
 serviceEndpoints:
-  backendService:
-    url: 'http://localhost:3001'
-  chatService:
-    url: 'http://localhost:3002'
-
+  chatServer:
+    url: 'http://localhost:3000'
+  webServer:
+    url: 'http://localhost:4000'
 policies:
-  - custom-auth:
-  - jwt:
-  - proxy:
-
+  - basic-auth
+  - cors
+  - expression
+  - key-auth
+  - log
+  - oauth2
+  - proxy
+  - rate-limit
+  - jwt
+  - auth
 pipelines:
-  # Pipeline for handling authentication
-  authPipeline:
+  default:
     apiEndpoints:
-      - auth
+      - api
     policies:
-      - custom-auth:
-          secretOrPrivateKey: ${JWT_SECRET}
-
-  # Pipeline for protecting web endpoints
-  webPipeline:
-    apiEndpoints:
-      - web
-    policies:
+      - cors:
+          - action:
+              origin: '*'
+              credentials: true
+      - auth:
       - jwt:
           - action:
-              secretOrPublicKey: ${JWT_SECRET}
-              userProperty: 'user'
+              secretOrPublicKey: 'e9d4bbb21e0f9d5426d7856fa0d4716de2fed982'
+              checkCredentialExistence: false
       - proxy:
           - action:
-              serviceEndpoint: backendService
+              serviceEndpoint: webServer
               changeOrigin: true
-
-  # Pipeline for protecting chat endpoints
   chatPipeline:
     apiEndpoints:
       - chat
     policies:
+      - cors:
+          - action:
+              origin: '*'
+              credentials: true
+      - auth:
       - jwt:
           - action:
-              secretOrPublicKey: ${JWT_SECRET}
-              userProperty: 'user'
+              secretOrPublicKey: 'your_jwt_secret'
+              checkCredentialExistence: false
       - proxy:
           - action:
-              serviceEndpoint: chatService
+              serviceEndpoint: chatServer
+              changeOrigin: true
+  webPipeline:
+    apiEndpoints:
+      - web
+    policies:
+      - cors:
+          - action:
+              origin: '*'
+              credentials: true
+      - auth:
+      - jwt:
+          - action:
+              secretOrPublicKey: 'your_jwt_secret'
+              checkCredentialExistence: false
+      - proxy:
+          - action:
+              serviceEndpoint: webServer
               changeOrigin: true

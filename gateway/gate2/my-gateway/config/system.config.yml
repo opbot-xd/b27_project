@@ -1,0 +1,18 @@
+db:
+  redis:
+    host: ${REDIS_HOST:-localhost}
+    port: ${REDIS_PORT:-6379}
+    namespace: ${REDIS_NAMESPACE:-EG}
+
+system:
+  
+  accessTokens:
+    timeToExpire: 7200 # Access tokens expiration time in seconds (2 hours)
+  refreshTokens:
+    timeToExpire: 86400 # Refresh tokens expiration time in seconds (1 day)
+  apiEndpoints:
+    maxRate: 1000 # Maximum number of API endpoints that can be defined
+  plugins:
+    - express-gateway-plugin-jwt # Example of loading additional plugin
+  gatewayConfig:
+    reload: true # Automatically reload the gateway if config files change

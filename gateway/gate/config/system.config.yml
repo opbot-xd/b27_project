@@ -1,26 +1,87 @@
-# Core
+# Database configuration
 db:
   redis:
-    emulate: true
-    namespace: EG
+    host: ${REDIS_HOST:-localhost}
+    port: ${REDIS_PORT:-6379}
+    namespace: ${REDIS_NAMESPACE:-EG}
 
-#plugins:
-  # express-gateway-plugin-example:
-  #   param1: 'param from system.config' 
+# Alternatively, if you're using in-memory storage:
+# db:
+#   connector: 'memory'
 
+# Crypto settings for JWT and encryption
 crypto:
-  cipherKey: sensitiveKey
-  algorithm: aes256
-  saltRounds: 10
+  cipherKey: ${CIPHER_KEY:-sensitiveKey}
+  algorithm: ${CRYPTO_ALGORITHM:-aes256}
+  saltRounds: ${SALT_ROUNDS:-10}
 
-# OAuth2 Settings
+# Session settings
 session:
-  secret: keyboard cat
+  secret: ${SESSION_SECRET:-keyboard cat}
   resave: false
   saveUninitialized: false
+
+# AccessToken Settings
 accessTokens:
-  timeToExpiry: 7200000
-refreshTokens:
-  timeToExpiry: 7200000
-authorizationCodes:
-  timeToExpiry: 300000
+  timeToExpiry: 7200000 # 2 hours
+
+# Admin API
+admin:
+  port: ${ADMIN_PORT:-9876}
+  host: ${ADMIN_HOST:-localhost}
+
+# Log settings
+logging:
+  level: ${LOG_LEVEL:-debug}
+  format: ${LOG_FORMAT:-combined}
+  enabled: ${LOGGING_ENABLED:-true}
+
+# Plugin settings
+plugins:
+  # Example plugin (uncomment and configure as needed)
+  # express-gateway-plugin-example:
+  #   param1: 'param from system.config'
+
+# OAuth2 settings (if you're using OAuth2)
+oauth2:
+  tokenType: 'jwt'
+  accessTokenTTL: ${ACCESS_TOKEN_TTL:-3600}
+
+# CORS settings
+cors:
+  origin: ${CORS_ORIGIN:-*}
+  methods: ${CORS_METHODS:-GET,HEAD,PUT,PATCH,POST,DELETE}
+  allowedHeaders: ${CORS_ALLOWED_HEADERS:-}
+  exposedHeaders: ${CORS_EXPOSED_HEADERS:-}
+  credentials: ${CORS_CREDENTIALS:-false}
+  maxAge: ${CORS_MAX_AGE:-}
+  optionsSuccessStatus: ${CORS_OPTIONS_SUCCESS_STATUS:-204}
+
+# Rate limiting settings
+rate-limit:
+  windowMs: ${RATE_LIMIT_WINDOW_MS:-900000}
+  max: ${RATE_LIMIT_MAX:-100}
+
+# Proxy settings
+http:
+  port: ${GATEWAY_HTTP_PORT:-8080}
+  host: ${GATEWAY_HTTP_HOST:-localhost}
+
+https:
+  port: ${GATEWAY_HTTPS_PORT:-8443}
+  host: ${GATEWAY_HTTPS_HOST:-localhost}
+  tls:
+    # Path to your SSL/TLS key and cert files
+    key: ${SSL_KEY_PATH:-}
+    cert: ${SSL_CERT_PATH:-}
+
+# Analytics settings (if you're using analytics)
+analytics:
+  # Example: enable Google Analytics
+  # ga:
+  #   trackingId: ${GA_TRACKING_ID}
+
+# Pipeline extension settings
+pipeline:
+  default:
+    apiEndpoint: '*'

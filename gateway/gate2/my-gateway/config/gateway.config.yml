@@ -1,0 +1,61 @@
+http:
+  port: 8080
+
+apiEndpoints:
+  web:
+    host: localhost
+    paths: /web/*
+  chat:
+    host: localhost
+    paths: /chat/*
+  signIn:
+    host: localhost
+    paths: /auth/sign-in
+
+serviceEndpoints:
+  web_service:
+    url: http://localhost:3000
+  chat_service:
+    url: http://localhost:3001
+
+policies:
+  - basic-auth
+  - jwt-auth
+  - expression
+  - proxy
+  - custom-auth
+
+pipelines:
+  sign-in:
+    apiEndpoints:
+      - signIn
+    policies:
+      - basic-auth
+      - custom-auth:
+          - action:
+              name: signIn
+              params:
+                mongoUri: mongodb+srv://opbot-xd:*111%23qwerty@cluster0.nsese.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+                jwtSecret: e9d4bbb21e0f9d5426d7856fa0d4716de2fed982
+
+  web-requests:
+    apiEndpoints:
+      - web
+    policies:
+      - jwt-auth:
+          - action:
+              secretOrPublicKey: e9d4bbb21e0f9d5426d7856fa0d4716de2fed982
+      - proxy:
+          - action:
+              serviceEndpoint: web_service
+
+  chat-requests:
+    apiEndpoints:
+      - chat
+    policies:
+      - jwt-auth:
+          - action:
+              secretOrPublicKey: e9d4bbb21e0f9d5426d7856fa0d4716de2fed982
+      - proxy:
+          - action:
+              serviceEndpoint: chat_service
