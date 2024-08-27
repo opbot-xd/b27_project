@@ -13,7 +13,10 @@ const Assign = () => {
     interface TaskAssignment {
         assigned_by: string | null,
         assigned_to: string | undefined,
-        task_message: string
+        task_message: string,
+        link: string,
+        remarks: string,
+        deadline: string
     }
 
     interface Event {
@@ -22,7 +25,7 @@ const Assign = () => {
       }
     const username: string | null  = localStorage.getItem("username")
     const targetUser = `${window.location.href}`.split('/')[4]
-    const [taskData, setTaskData] = useState<TaskAssignment>({assigned_by: username, assigned_to: targetUser, task_message:''})
+    const [taskData, setTaskData] = useState<TaskAssignment>({assigned_by: username, assigned_to: targetUser, task_message:'', link:'', remarks:"", deadline:''})
     const [assignedStatus, setAssignedStatus] = useState<boolean>(false)
     // const [authorizationStatus,setAuthorizationStatus] = useState<boolean>(true)
 
