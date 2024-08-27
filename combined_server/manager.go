@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	// "fmt"
 	"log"
 	"net/http"
 	"sync"
@@ -92,7 +93,7 @@ func (m *Manager) loginHandler(w http.ResponseWriter, r *http.Request) {
 		Username string `json:"username"`
 		Password string `json:"password"`
 	}
-
+	// fmt.Printf("aai hai request to !!!")
 	var req userLoginRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
