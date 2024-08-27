@@ -5,7 +5,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/google/uuid"
+	// "github.com/google/uuid"
 )
 
 
@@ -33,7 +33,7 @@ func NewRetentionMap(ctx context.Context, retentionPeriod time.Duration) Retenti
 // NewOTP creates and adds a new otp to the map
 func (rm RetentionMap) NewOTP() OTP {
 	o := OTP{
-		Key:     uuid.NewString(),
+		Key:     "otp",
 		Created: time.Now(),
 	}
 

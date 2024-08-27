@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import CryptoJs from 'crypto-js';
@@ -39,10 +40,11 @@ const Login = () => {
       console.log(response);
       localStorage.setItem("username", userData.username);
       sessionStorage.setItem("access_token", response.data["access_token"]);
-      setLoginSuccess(true);
+      
 
       if (window["WebSocket"]) {
-        const connection = await new WebSocket(`ws://${document.location.host}/ws?otp=otp&username=${userData.username}`);
+        console.log("windows support websockets")
+        const connection = await new WebSocket(`ws://localhost:8080/chat/ws?otp=otp&username=${userData.username}`);
         connection.onopen = () => {
           console.log('Connected to WebSocket');
         };
@@ -50,6 +52,7 @@ const Login = () => {
           console.error('WebSocket Error:', error);
         };
         setConn(connection); 
+        setLoginSuccess(true);
       }
     } catch (err) {
       alert('Login Failed! Try Again');

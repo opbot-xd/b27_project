@@ -11,10 +11,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": f"{os.getenv("CLIENT_URL")}"}}, supports_credentials=True)
-app.config["JWT_SECRET_KEY"] = f"{os.getenv("JWT_SECRET_KEY")}"
+CORS(app, resources={r"/*": {"origins": f"{os.getenv('CLIENT_URL')}"}}, supports_credentials=True)
+app.config["JWT_SECRET_KEY"] = f"{os.getenv('JWT_SECRET_KEY')}"
 
-app.config['MONGO_URI'] = f"{os.getenv("MONGO_URI")}"
+app.config['MONGO_URI'] = f"{os.getenv('MONGO_URI')}"
 
 mongo = PyMongo(app)
 jwt = JWTManager(app)

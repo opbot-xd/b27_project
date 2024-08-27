@@ -18,7 +18,7 @@ var (
 	*/
 	websocketUpgrader = websocket.Upgrader{
 		// Apply the Origin Checker
-		// CheckOrigin:     checkOrigin,
+		CheckOrigin:     checkOrigin,
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 	}
@@ -109,7 +109,7 @@ func (m *Manager) loginHandler(w http.ResponseWriter, r *http.Request) {
 
 		// add a new OTP
 		otp := m.otps.NewOTP()
-		log.Println(otp)
+		// log.Println(otp)
 		resp := response{
 			OTP: otp.Key,
 		}

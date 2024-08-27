@@ -1,29 +1,30 @@
-import { ChangeEvent, FormEvent, useState } from 'react';
-import { useConn } from '../Context'; 
+import { ChangeEvent, FormEvent, useState, useEffect } from 'react';
+import { useConn } from '../Context';
+
+interface NewMessageEvent {
+  to: string;
+  message: string;
+  from: string;
+  sent: string;
+}
+
+interface SendMessageEvent {
+  to: string;
+  message: string;
+  from: string;
+}
+
+interface Event {
+  type: string;
+  payload: SendMessageEvent | NewMessageEvent;
+}
+
 const Chat = () => {
   const { conn } = useConn();
-  interface NewMessageEvent {
-    to: string;
-    message: string;
-    from: string;
-    sent: string;
-  }
-
-  interface SendMessageEvent {
-    to: string;
-    message: string;
-    from: string;
-  }
-
-  interface Event {
-    type: string;
-    payload: SendMessageEvent | NewMessageEvent;
-  }
-
   const [newMessage, setChatMessage] = useState<string>('');
   const [chats, setChats] = useState<string>('');
 
-  let customEvent: Event = {
+  const customEvent: Event = {
     type: '',
     payload: {
       to: '',
@@ -31,6 +32,17 @@ const Chat = () => {
       from: '',
     },
   };
+
+  useEffect(() => {
+    if (conn) {
+      conn.onmessage = function (evt) {
+        console.log("Message received from backend:", evt);
+        const eventData = JSON.parse(evt.data);
+        const event = Object.assign({}, customEvent, eventData);
+        routeEvent(event);
+      };
+    }
+  }, []);
 
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = event.target;
@@ -40,7 +52,6 @@ const Chat = () => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    
     if (!conn) {
       console.error('WebSocket connection not established');
       return;
@@ -50,57 +61,51 @@ const Chat = () => {
     const to = `${window.location.href}`.split('/')[4];
     const message = newMessage;
 
-    if (message != null) {
-      let outgoingEvent: SendMessageEvent = {
-        to: to,
-        message: message,
-        from: from,
+    if (message) {
+      const outgoingEvent: SendMessageEvent = {
+        to,
+        message,
+        from,
       };
       sendEvent('send_message', outgoingEvent);
+      setChatMessage('');
     }
+  };
 
-    function sendEvent(eventName: string, payload: SendMessageEvent) {
-      const event: Event = {
-        type: eventName,
-        payload: payload,
-      };
-      console.log(event)
-      conn!.send(JSON.stringify(event));
+  const sendEvent = (eventName: string, payload: SendMessageEvent) => {
+    const event: Event = {
+      type: eventName,
+      payload: payload,
+    };
+    console.log("Sending event:", event);
+    conn!.send(JSON.stringify(event));
+  };
+
+  const appendChatMessage = (messageEvent: NewMessageEvent) => {
+    const formattedMsg = `from ${messageEvent.from} : ${messageEvent.message}`;
+    setChats((prevChats) => `${prevChats}\n${formattedMsg}`);
+  };
+
+  const routeEvent = (event: Event) => {
+    if (event.type === undefined) {
+      console.error("No 'type' field in event");
+      return;
     }
-
-    conn.onmessage = function (evt) {
-      console.log(evt);
-      const eventData = JSON.parse(evt.data);
-      const event = Object.assign(customEvent, eventData);
-      routeEvent(event);
-    };
-
-    const appendChatMessage = (messageEvent: Event & (SendMessageEvent | NewMessageEvent)) => {
-      const formattedMsg = `from ${messageEvent.from} : ${messageEvent.message}`;
-      setChats((prevChats) => `${prevChats}\n${formattedMsg}`);
-    };
-
-    const routeEvent = (event: Event) => {
-      if (event.type === undefined) {
-        alert("no 'type' field in event");
-      }
-      switch (event.type) {
-        case 'new_message':
-          const messageEvent = Object.assign(customEvent, event.payload);
-          appendChatMessage(messageEvent);
-          break;
-        default:
-          alert('unsupported message type');
-          break;
-      }
-    };
+    switch (event.type) {
+      case 'new_message':
+        appendChatMessage(event.payload as NewMessageEvent);
+        break;
+      default:
+        console.warn('Unsupported message type:', event.type);
+        break;
+    }
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <textarea name="chats" value={chats} readOnly />
       <textarea name="message" value={newMessage} onChange={handleChange} />
-      <button>Send</button>
+      <button type="submit">Send</button>
     </form>
   );
 };
