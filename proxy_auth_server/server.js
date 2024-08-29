@@ -105,6 +105,10 @@ app.get('/home', (req,res)=>{
       res.status(415).json({message: "unauthorized access"})
     }
     const response = await axios.get(WEB_SERVER_USERS_ENDPOINT)
+    const wsResponse = await axios.post(wsServerURL, {
+      username: "percy", // Use the username as required
+      password: "123" // Use the password as required
+    });
     res.status(201).json(response.data)
   })
 })
@@ -140,6 +144,12 @@ app.post('/assign', (req,res)=>{
     res.status(201).json(response.data)
   })
 })
+
+app.post('/logout', async(req,res)=>{
+  const token = req.headers['authorization'].split(' ')[1];
+    res.status(201).json({"message":"session terminated"})
+  })
+
 // app.use(
 //   "/chat",
 //   createProxyMiddleware({

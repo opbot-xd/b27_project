@@ -66,30 +66,97 @@ const Signup = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label>Username:</label><br />
-      <input
-        type='text'
-        name="username"
-        value={formData.username}
-        onChange={handleChange}
-      /><br /><br />
-      <label>Email:</label><br />
-      <input
-        type='text'
-        name="email"
-        value={formData.email}
-        onChange={handleChange}
-      /><br /><br />
-      <label>Password:</label><br />
-      <input
-        type='password'
-        name="password"
-        value={formData.password}
-        onChange={handleChange}
-      /><br /><br />
-      <button>Signup!</button>
-    </form>
+    <form onSubmit={handleSubmit} style={{
+      maxWidth: '400px',
+      margin: '50px auto',
+      padding: '60px',
+      border: '1px solid #ddd',
+      borderRadius: '10px',
+      backgroundColor: '#2C3E50', // Darker background color
+      color: '#ECF0F1', // Light text color
+      boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)'
+  }}>
+    <label style={{
+        fontWeight: 'bold',
+        display: 'block',
+        marginBottom: '10px',
+        color: '#ECF0F1' // Light text color
+    }}>Username:</label>
+    <input
+      type='text'
+      name="username"
+      value={formData.username}
+      onChange={handleChange}
+      style={{
+          width: '100%',
+          padding: '12px', // Uniform padding
+          marginBottom: '20px',
+          border: '1px solid #34495E', // Slightly lighter border
+          borderRadius: '5px',
+          fontSize: '16px',
+          backgroundColor: '#34495E', // Slightly lighter background
+          color: '#ECF0F1' // Light text color
+      }}
+    />
+    
+    <label style={{
+        fontWeight: 'bold',
+        display: 'block',
+        marginBottom: '10px',
+        color: '#ECF0F1' // Light text color
+    }}>Email:</label>
+    <input
+      type='text'
+      name="email"
+      value={formData.email}
+      onChange={handleChange}
+      style={{
+          width: '100%',
+          padding: '12px', // Uniform padding
+          marginBottom: '20px',
+          border: '1px solid #34495E', // Slightly lighter border
+          borderRadius: '5px',
+          fontSize: '16px',
+          backgroundColor: '#34495E', // Slightly lighter background
+          color: '#ECF0F1' // Light text color
+      }}
+    />
+    
+    <label style={{
+        fontWeight: 'bold',
+        display: 'block',
+        marginBottom: '10px',
+        color: '#ECF0F1' // Light text color
+    }}>Password:</label>
+    <input
+      type='password'
+      name="password"
+      value={formData.password}
+      onChange={handleChange}
+      style={{
+          width: '100%',
+          padding: '12px', // Uniform padding
+          marginBottom: '20px',
+          border: '1px solid #34495E', // Slightly lighter border
+          borderRadius: '5px',
+          fontSize: '16px',
+          backgroundColor: '#34495E', // Slightly lighter background
+          color: '#ECF0F1' // Light text color
+      }}
+    />
+    
+    <button type='submit' style={{
+        width: '100%',
+        padding: '12px', // Uniform padding
+        backgroundColor: '#27AE60', // Green button color
+        color: '#ECF0F1', // Light text color
+        border: 'none',
+        borderRadius: '5px',
+        fontSize: '16px',
+        cursor: 'pointer'
+    }}>Signup!</button>
+  </form>
+  
   )
 }
 export default Signup

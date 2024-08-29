@@ -1,4 +1,5 @@
 import { ChangeEvent, FormEvent, useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useConn } from '../Context';
 
 interface NewMessageEvent {
@@ -20,9 +21,12 @@ interface Event {
 }
 
 const Chat = () => {
+  const location=  useLocation()
   const { conn } = useConn();
   const [newMessage, setChatMessage] = useState<string>('');
   const [chats, setChats] = useState<string>('');
+  const username = localStorage.getItem("username")
+
 
   const customEvent: Event = {
     type: '',
@@ -32,6 +36,27 @@ const Chat = () => {
       from: '',
     },
   };
+  const {evt} = location.state
+  console.log(evt)
+  
+  const appendChatMessage = (messageEvent: NewMessageEvent) => {
+    const formattedMsg = `from ${messageEvent.from} : ${messageEvent.message}`;
+    setChats((prevChats) => `${prevChats}\n${formattedMsg}`);
+  };
+  useEffect(() => {
+    if (evt) {
+      console.log(evt);
+      evt.forEach((e: Event) => {
+        if((e.payload.to === username && e.payload.from === (window.location.href).split('/')[4])||e.payload.to === (window.location.href).split('/')[4] && e.payload.from === username){
+          const messageEvent: NewMessageEvent = e.payload as NewMessageEvent;
+          console.log(messageEvent)
+          appendChatMessage(messageEvent);
+        }
+      });
+    }
+  }, []);
+
+
 
   useEffect(() => {
     if (conn) {
@@ -63,9 +88,9 @@ const Chat = () => {
 
     if (message) {
       const outgoingEvent: SendMessageEvent = {
-        to,
-        message,
-        from,
+        to: to,
+        message: message,
+        from: from,
       };
       sendEvent('send_message', outgoingEvent);
       setChatMessage('');
@@ -81,10 +106,7 @@ const Chat = () => {
     conn!.send(JSON.stringify(event));
   };
 
-  const appendChatMessage = (messageEvent: NewMessageEvent) => {
-    const formattedMsg = `from ${messageEvent.from} : ${messageEvent.message}`;
-    setChats((prevChats) => `${prevChats}\n${formattedMsg}`);
-  };
+  
 
   const routeEvent = (event: Event) => {
     if (event.type === undefined) {
@@ -102,11 +124,74 @@ const Chat = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <textarea name="chats" value={chats} readOnly />
-      <textarea name="message" value={newMessage} onChange={handleChange} />
-      <button type="submit">Send</button>
-    </form>
+<form onSubmit={handleSubmit} style={{
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '15px', // Increased gap between elements
+    padding: '60px',
+    backgroundColor: '#1ABC9C', // Teal background color for the form
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    maxWidth: '1000px', // Increased width of the form
+    margin: 'auto',
+    width:"100%"
+}}>
+    <textarea
+        name="chats"
+        value={chats}
+        readOnly
+        style={{
+            width: '100%',
+            height: '300px',
+            padding: '10px',
+            borderRadius: '8px',
+            border: '1px solid #16A085', // Slightly darker teal for the border
+            backgroundColor: '#16A085', // Darker teal background for the chat display
+            color: '#FFFFFF', // White text color
+            resize: 'none',
+            overflowY: 'auto'
+        }}
+    />
+    <textarea
+        name="message"
+        value={newMessage}
+        onChange={handleChange}
+        style={{
+            width: '100%',
+            height: '100px', // Increased height for more typing space
+            padding: '10px',
+            borderRadius: '8px',
+            border: '1px solid #16A085', // Slightly darker teal for the border
+            backgroundColor: '#16A085', // Darker teal background for the input
+            color: '#FFFFFF', // White text color
+            resize: 'none'
+        }}
+    />
+    <button
+        type="submit"
+        style={{
+            width: '100%',
+            padding: '12px', // Slightly increased padding for the button
+            borderRadius: '8px',
+            border: 'none',
+            backgroundColor: '#E67E22', // Vibrant orange color for the button
+            color: '#FFFFFF', // White text color
+            fontSize: '18px', // Increased font size for better readability
+            cursor: 'pointer',
+            transition: 'background-color 0.3s',
+            fontWeight: 'bold'
+        }}
+        onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#D35400')}
+        onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#E67E22')}
+    >
+        Send
+    </button>
+</form>
+
+
+
+
+
   );
 };
 
