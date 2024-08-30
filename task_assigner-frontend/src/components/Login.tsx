@@ -122,49 +122,49 @@ const Login = () => {
       padding: '50px',
       border: '1px solid #ddd',
       borderRadius: '10px',
-      backgroundColor: '#2C3E50', // Darker background color
-      color: '#ECF0F1', // Light text color
+      backgroundColor: '#2C3E50', 
+      color: '#ECF0F1', 
       boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)'
   }}>
     <label style={{
         fontWeight: 'bold',
         display: 'block',
         marginBottom: '10px',
-        color: '#ECF0F1' // Light text color
+        color: '#ECF0F1'
     }}>Username:</label><br />
     <input type='text' name='username' value={userData.username} onChange={handleChange} style={{
         width: '100%',
         padding: '10px',
         marginBottom: '20px',
-        border: '1px solid #34495E', // Slightly lighter border
+        border: '1px solid #34495E',
         borderRadius: '5px',
         fontSize: '16px',
-        backgroundColor: '#34495E', // Slightly lighter background
-        color: '#ECF0F1' // Light text color
+        backgroundColor: '#34495E',
+        color: '#ECF0F1' 
     }} /><br /><br />
     
     <label style={{
         fontWeight: 'bold',
         display: 'block',
         marginBottom: '10px',
-        color: '#ECF0F1' // Light text color
+        color: '#ECF0F1' 
     }}>Password:</label><br />
     <input type='password' name='password' value={userData.password} onChange={handleChange} style={{
         width: '100%',
         padding: '10px',
         marginBottom: '20px',
-        border: '1px solid #34495E', // Slightly lighter border
+        border: '1px solid #34495E',
         borderRadius: '5px',
         fontSize: '16px',
-        backgroundColor: '#34495E', // Slightly lighter background
-        color: '#ECF0F1' // Light text color
+        backgroundColor: '#34495E', 
+        color: '#ECF0F1' 
     }} /><br /><br />
     
     <Link to='/signup' style={{
         display: 'block',
         textAlign: 'center',
         marginTop: '10px',
-        color: '#1E90FF', // Bright link color
+        color: '#1E90FF', 
         textDecoration: 'none',
         fontSize: '14px'
     }}>Don't have an account? Sign up!</Link><br /><br />
@@ -172,8 +172,8 @@ const Login = () => {
     <button type='submit' style={{
         width: '100%',
         padding: '10px',
-        backgroundColor: '#27AE60', // Green button color
-        color: '#ECF0F1', // Light text color
+        backgroundColor: '#27AE60', 
+        color: '#ECF0F1', 
         border: 'none',
         borderRadius: '5px',
         fontSize: '16px',

@@ -15,10 +15,7 @@ type ClientList map[*Client]bool
 // Client is a websocket client, basically a frontend visitor
 type Client struct {
 	username string
-	// the websocket connection
 	connection *websocket.Conn
-
-	// manager is the manager used to manage the client
 	manager *Manager
 	// egress is used to avoid concurrent writes on the WebSocket
 	egress chan Event
@@ -103,7 +100,7 @@ func (c *Client) writeLoop() {
 
 
 func (c *Client) sendInitialData(messages []HistoryEvent, works []MyRecord_work) {
-    // Send message history
+    // sends message history
     for _, msg := range messages {
         data, err := json.Marshal(msg)
         if err != nil {
@@ -116,7 +113,7 @@ func (c *Client) sendInitialData(messages []HistoryEvent, works []MyRecord_work)
         }
     }
 
-    // Send work history
+    // sends work history
     for _, work := range works {
         data, err := json.Marshal(work)
         if err != nil {

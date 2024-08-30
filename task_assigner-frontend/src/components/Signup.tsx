@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, ChangeEvent, FormEvent, createContext } from 'react'
 import {Navigate} from 'react-router-dom'
 import axios, { AxiosResponse } from 'axios'
@@ -72,15 +73,15 @@ const Signup = () => {
       padding: '60px',
       border: '1px solid #ddd',
       borderRadius: '10px',
-      backgroundColor: '#2C3E50', // Darker background color
-      color: '#ECF0F1', // Light text color
+      backgroundColor: '#2C3E50',
+      color: '#ECF0F1', 
       boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)'
   }}>
     <label style={{
         fontWeight: 'bold',
         display: 'block',
         marginBottom: '10px',
-        color: '#ECF0F1' // Light text color
+        color: '#ECF0F1' 
     }}>Username:</label>
     <input
       type='text'
@@ -89,13 +90,13 @@ const Signup = () => {
       onChange={handleChange}
       style={{
           width: '100%',
-          padding: '12px', // Uniform padding
+          padding: '12px', 
           marginBottom: '20px',
-          border: '1px solid #34495E', // Slightly lighter border
+          border: '1px solid #34495E', 
           borderRadius: '5px',
           fontSize: '16px',
-          backgroundColor: '#34495E', // Slightly lighter background
-          color: '#ECF0F1' // Light text color
+          backgroundColor: '#34495E', 
+          color: '#ECF0F1' 
       }}
     />
     
@@ -103,7 +104,7 @@ const Signup = () => {
         fontWeight: 'bold',
         display: 'block',
         marginBottom: '10px',
-        color: '#ECF0F1' // Light text color
+        color: '#ECF0F1' 
     }}>Email:</label>
     <input
       type='text'
@@ -112,13 +113,13 @@ const Signup = () => {
       onChange={handleChange}
       style={{
           width: '100%',
-          padding: '12px', // Uniform padding
+          padding: '12px', 
           marginBottom: '20px',
-          border: '1px solid #34495E', // Slightly lighter border
+          border: '1px solid #34495E', 
           borderRadius: '5px',
           fontSize: '16px',
-          backgroundColor: '#34495E', // Slightly lighter background
-          color: '#ECF0F1' // Light text color
+          backgroundColor: '#34495E', 
+          color: '#ECF0F1' 
       }}
     />
     
@@ -126,7 +127,7 @@ const Signup = () => {
         fontWeight: 'bold',
         display: 'block',
         marginBottom: '10px',
-        color: '#ECF0F1' // Light text color
+        color: '#ECF0F1'
     }}>Password:</label>
     <input
       type='password'
@@ -135,21 +136,21 @@ const Signup = () => {
       onChange={handleChange}
       style={{
           width: '100%',
-          padding: '12px', // Uniform padding
+          padding: '12px', 
           marginBottom: '20px',
-          border: '1px solid #34495E', // Slightly lighter border
+          border: '1px solid #34495E', 
           borderRadius: '5px',
           fontSize: '16px',
-          backgroundColor: '#34495E', // Slightly lighter background
-          color: '#ECF0F1' // Light text color
+          backgroundColor: '#34495E',
+          color: '#ECF0F1' 
       }}
     />
     
     <button type='submit' style={{
         width: '100%',
-        padding: '12px', // Uniform padding
-        backgroundColor: '#27AE60', // Green button color
-        color: '#ECF0F1', // Light text color
+        padding: '12px',
+        backgroundColor: '#27AE60', 
+        color: '#ECF0F1', 
         border: 'none',
         borderRadius: '5px',
         fontSize: '16px',

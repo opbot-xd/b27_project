@@ -36,20 +36,20 @@ func Connect_with_work() *mongo.Collection {
 
 	MONGO_URI := "mongodb://localhost:27017/taskAssigner"
 
- // Connect to the database.
+ // connecting to the database.
  clientOption := options.Client().ApplyURI(MONGO_URI)
  client, err := mongo.Connect(context.Background(), clientOption)
  if err != nil {
   log.Fatal(err)
  }
 
- // Check the connection.
+ // check the connection is secure/steady
  err = client.Ping(context.Background(), nil)
  if err != nil {
   log.Fatal(err)
  }
 
- // Create collection
+ // refers to a specific collection
  Collection := client.Database("taskAssigner").Collection("tasks")
  if err != nil {
      log.Fatal(err)

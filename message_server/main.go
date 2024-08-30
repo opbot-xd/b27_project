@@ -18,7 +18,7 @@ func main() {
 	Connect_Redis()
 	setupAPI(ctx)
 
-	// Serve on port :8080, fudge yeah hardcoded port
+	//  listening on port :8080,
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
@@ -33,7 +33,7 @@ func setupAPI(ctx context.Context) {
 	manager := NewManager(ctx)
 
 	// Serve the ./frontend directory at Route /
-	http.Handle("/", http.FileServer(http.Dir("./frontend")))
+	http.Handle("/", http.FileServer(http.Dir("./frontend"))) //for testing purposes only
 	http.HandleFunc("/chat/login", manager.loginHandler)
 	http.HandleFunc("/chat/ws", manager.serveWS)
 

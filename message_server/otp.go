@@ -1,4 +1,4 @@
-// Package main - the OTP file is used for having a OTP manager
+
 package main
 
 import (

@@ -127,12 +127,12 @@ const Chat = () => {
 <form onSubmit={handleSubmit} style={{
     display: 'flex',
     flexDirection: 'column',
-    gap: '15px', // Increased gap between elements
+    gap: '15px', 
     padding: '60px',
-    backgroundColor: '#1ABC9C', // Teal background color for the form
+    backgroundColor: '#1ABC9C', 
     borderRadius: '10px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-    maxWidth: '1000px', // Increased width of the form
+    maxWidth: '1000px', 
     margin: 'auto',
     width:"100%"
 }}>
@@ -145,9 +145,9 @@ const Chat = () => {
             height: '300px',
             padding: '10px',
             borderRadius: '8px',
-            border: '1px solid #16A085', // Slightly darker teal for the border
-            backgroundColor: '#16A085', // Darker teal background for the chat display
-            color: '#FFFFFF', // White text color
+            border: '1px solid #16A085', 
+            backgroundColor: '#16A085', 
+            color: '#FFFFFF', 
             resize: 'none',
             overflowY: 'auto'
         }}
@@ -158,12 +158,12 @@ const Chat = () => {
         onChange={handleChange}
         style={{
             width: '100%',
-            height: '100px', // Increased height for more typing space
+            height: '100px', 
             padding: '10px',
             borderRadius: '8px',
-            border: '1px solid #16A085', // Slightly darker teal for the border
-            backgroundColor: '#16A085', // Darker teal background for the input
-            color: '#FFFFFF', // White text color
+            border: '1px solid #16A085', 
+            backgroundColor: '#16A085', 
+            color: '#FFFFFF',
             resize: 'none'
         }}
     />
@@ -171,12 +171,12 @@ const Chat = () => {
         type="submit"
         style={{
             width: '100%',
-            padding: '12px', // Slightly increased padding for the button
+            padding: '12px', 
             borderRadius: '8px',
             border: 'none',
-            backgroundColor: '#E67E22', // Vibrant orange color for the button
-            color: '#FFFFFF', // White text color
-            fontSize: '18px', // Increased font size for better readability
+            backgroundColor: '#E67E22',
+            color: '#FFFFFF', 
+            fontSize: '18px', 
             cursor: 'pointer',
             transition: 'background-color 0.3s',
             fontWeight: 'bold'

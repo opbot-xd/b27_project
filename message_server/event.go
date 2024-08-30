@@ -71,7 +71,6 @@ func SendMessageHandler(event Event, c *Client) error {
 		return fmt.Errorf("bad payload in request: %v", err)
 	}
 
-	// Prepare an Outgoing Message to others
 	var broadMessage NewMessageEvent
 
 	broadMessage.Time = time.Now()
@@ -84,13 +83,12 @@ func SendMessageHandler(event Event, c *Client) error {
 		return fmt.Errorf("failed to marshal broadcast message: %v", err)
 	}
 
-	// Place payload into an Event
+
 	var outgoingEvent Event
 	outgoingEvent.Payload = data
 	outgoingEvent.Type = EventNewMessage
-	// Broadcast to all other Clients
+	// broadcasting to other Clients
 	for client := range c.manager.clients {
-		// Only send to clients inside the same chatroom
 		if client.username == broadMessage.To || client.username == broadMessage.From {
 			client.egress <- outgoingEvent
 		}
@@ -126,9 +124,6 @@ func ChatRoomHandler(event Event, c *Client) error {
 		return fmt.Errorf("bad payload in request: %v", err)
 	}
 
-	// Add Client to chat room
-	// c.chatroom = changeRoomEvent.Name
-
 	return nil
 }
 
@@ -139,8 +134,6 @@ func SendWorkHandler(event Event, c *Client) error {
 		return fmt.Errorf("bad payload in request: %v", err)
 	}
 	// log.Println(chatevent)
-
-	// Prepare an Outgoing Message to others
 	// var broadMessage NewMessageEvent
 
 	// broadMessage.Sent = time.Now()

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import axios, { AxiosResponse } from 'axios';
